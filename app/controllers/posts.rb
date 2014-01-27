@@ -24,9 +24,5 @@ SampleBlog::App.controllers :posts do
     render 'posts/index'
   end
 
-  get :show do
-    @pos = Post.find_by_id(params[:id])
-    render 'posts/show'
-  end
-
+  
 end
