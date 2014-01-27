@@ -1,7 +1,6 @@
 SampleBlog::Admin.controllers :posts do
-  get :index do
-    @title = "Posts"
-    @posts = Post.all
+  get :index, :provides => [:html, :rss, :atom] do
+    @posts = Post.all(:order => 'created_at desc')
     render 'posts/index'
   end
 
@@ -13,13 +12,11 @@ SampleBlog::Admin.controllers :posts do
 
   post :create do
     @post = Post.new(params[:post])
+    @post.account = current_account
     if @post.save
-      @title = pat(:create_title, :model => "post #{@post.id}")
-      flash[:success] = pat(:create_success, :model => 'Post')
-      params[:save_and_continue] ? redirect(url(:posts, :index)) : redirect(url(:posts, :edit, :id => @post.id))
+      flash[:notice] = 'Post was successfully created.'
+      redirect url(:posts, :edit, :id => @post.id)
     else
-      @title = pat(:create_title, :model => 'post')
-      flash.now[:error] = pat(:create_error, :model => 'post')
       render 'posts/new'
     end
   end
